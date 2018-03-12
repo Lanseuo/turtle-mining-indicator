@@ -1,16 +1,16 @@
-#!/usr/bin/env python3
-import signal
 import gi
+import os
+import signal
+import sys
 import webbrowser
-import requests
-import threading
-import datetime
+
 gi.require_version('Gtk', '3.0')
 gi.require_version('AppIndicator3', '0.1')
+
 from gi.repository import Gtk, AppIndicator3, GLib
 
-import os
-import sys
+from .provider import Provider
+
 
 try:
     wallet_address = sys.argv[1]
@@ -19,52 +19,9 @@ except:
     quit()
 
 
-class TurtleMining():
-    def __init__(self):
-        pass
-
-    def fetch_data(self):
-        r1 = requests.get(
-            "https://trtl.mine2gether.com/api/stats_address?address=" + wallet_address)
-        r2 = requests.get("https://trtl.mine2gether.com/api/stats")
-        return [r1.json(), r2.json()]
-
-    def data(self):
-        d = self.fetch_data()
-
-        balance = str(int(d[0]["stats"]["balance"]) / 100) + " TRTL"
-
-        hashes = d[0]["stats"]["hashes"]
-
-        hashrate = d[0]["stats"]["hashrate"] + "/s"
-
-        last_share = str(datetime.datetime.now(
-        ).replace(microsecond=0) - datetime.datetime.fromtimestamp(int(d[0]["stats"]["lastShare"])).replace(microsecond=0))
-
-        if (d[1]["pool"]["hashrate"] > 1000):
-            pool_hashrate = str(round(d[1]["pool"]["hashrate"] / 1000, 2)) + " KH/s"
-        else:
-            pool_hashrate = str(d[1]["pool"]["hashrate"]) + " H/s"
-
-        pool_miners = str(d[1]["pool"]["miners"])
-
-        pool_last_block_found = str(datetime.datetime.now(
-        ).replace(microsecond=0) - datetime.datetime.fromtimestamp(int(str(str(d[1]["pool"]["lastBlockFound"])[:-3]))).replace(microsecond=0))
-
-        return {
-            "balance": balance,
-            "hashes": hashes,
-            "hashrate": hashrate,
-            "last_share": last_share,
-            "pool_hashrate": pool_hashrate,
-            "pool_miners": pool_miners,
-            "pool_last_block_found": pool_last_block_found
-        }
-
-
 class Indicator():
     def __init__(self):
-        self.turtle = TurtleMining()
+        self.turtle = Provider(wallet_address)
 
         self.app = 'turtle-mining-indicator'
         self.menu = {}
