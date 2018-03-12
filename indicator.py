@@ -10,9 +10,13 @@ gi.require_version('AppIndicator3', '0.1')
 from gi.repository import Gtk, AppIndicator3, GLib
 
 import os
+import sys
 
-WALLET = ""
-ICON = os.path.realpath(__file__)[:-12] + "icon.png"
+try:
+    wallet_address = sys.argv[1]
+except:
+    print("Usage: indicator.py WALLETADDRESS")
+    quit()
 
 
 class TurtleMining():
@@ -20,7 +24,8 @@ class TurtleMining():
         pass
 
     def fetch_data(self):
-        r1 = requests.get("https://trtl.mine2gether.com/api/stats_address?address=" + WALLET)
+        r1 = requests.get(
+            "https://trtl.mine2gether.com/api/stats_address?address=" + wallet_address)
         r2 = requests.get("https://trtl.mine2gether.com/api/stats")
         return [r1.json(), r2.json()]
 
@@ -64,11 +69,11 @@ class Indicator():
         self.app = 'turtle-mining-indicator'
         self.menu = {}
         self.indicator = AppIndicator3.Indicator.new(
-            self.app, ICON,
+            self.app,
+            os.path.realpath(__file__)[:-12] + "icon.png",
             AppIndicator3.IndicatorCategory.OTHER)
         self.indicator.set_status(AppIndicator3.IndicatorStatus.ACTIVE)
         self.indicator.set_menu(self.create_menu())
-        self.indicator.set_label("Starting TurtleMining Indicator ...", self.app)
         self.update()
         GLib.timeout_add_seconds(300, self.update)
 
