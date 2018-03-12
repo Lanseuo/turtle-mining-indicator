@@ -14,7 +14,7 @@ from .provider import Provider
 
 try:
     wallet_address = sys.argv[1]
-except:
+except IndexError:
     print("Usage: indicator.py WALLETADDRESS")
     quit()
 
@@ -27,7 +27,7 @@ class Indicator():
         self.menu = {}
         self.indicator = AppIndicator3.Indicator.new(
             self.app,
-            os.path.realpath(__file__)[:-12] + "icon.png",
+            os.path.realpath(__file__)[:-21] + "icon.png",
             AppIndicator3.IndicatorCategory.OTHER)
         self.indicator.set_status(AppIndicator3.IndicatorStatus.ACTIVE)
         self.indicator.set_menu(self.create_menu())
