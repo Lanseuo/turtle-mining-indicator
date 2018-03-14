@@ -17,7 +17,7 @@ try:
     provider = sys.argv[1]
     wallet_address = sys.argv[2]
 except IndexError:
-    print("Usage: indicator.py PROVIDER WALLETADDRESS")
+    print("Usage: indicator.py POOL WALLETADDRESS")
     quit()
 
 providers = ["mine2gether", "minetrtl"]

@@ -5,6 +5,8 @@ from .provider import Provider
 
 
 class MineTRTL(Provider):
+    """minetrtl.us / ny.minetrtl.us"""
+
     def __init__(self, wallet_address):
         self.wallet_address = wallet_address
 

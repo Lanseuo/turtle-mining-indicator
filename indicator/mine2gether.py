@@ -5,6 +5,8 @@ from .provider import Provider
 
 
 class Mine2GetherProvider(Provider):
+    """trtl.mine2gether.com"""
+
     def __init__(self, wallet_address):
         self.wallet_address = wallet_address
 
