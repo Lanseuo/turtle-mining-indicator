@@ -10,6 +10,7 @@ gi.require_version('AppIndicator3', '0.1')
 from gi.repository import Gtk, AppIndicator3, GLib
 
 from .mine2gether import Mine2GetherProvider
+from .minetrtl import MineTRTL
 
 
 try:
@@ -19,7 +20,7 @@ except IndexError:
     print("Usage: indicator.py PROVIDER WALLETADDRESS")
     quit()
 
-providers = ["mine2gether"]
+providers = ["mine2gether", "minetrtl"]
 if provider not in providers:
     print("The provider '" + provider + "' is currently not supported. A list of all supported prodivers can be found on https://github.com/Lanseuo/turtle-mining-indicator. Create an issue and request support for your provider.")
     quit()
@@ -44,6 +45,8 @@ class Indicator():
     def choose_provider(self, provider, wallet_address):
         if provider == "mine2gether":
             self.turtle = Mine2GetherProvider(wallet_address)
+        elif provider == "minetrtl":
+            self.turtle = MineTRTL(wallet_address)
 
     def update(self):
         try:
