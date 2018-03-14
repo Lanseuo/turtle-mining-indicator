@@ -9,30 +9,41 @@ gi.require_version('AppIndicator3', '0.1')
 
 from gi.repository import Gtk, AppIndicator3, GLib
 
-from .provider import Provider
+from .mine2gether import Mine2GetherProvider
 
 
 try:
-    wallet_address = sys.argv[1]
+    provider = sys.argv[1]
+    wallet_address = sys.argv[2]
 except IndexError:
-    print("Usage: indicator.py WALLETADDRESS")
+    print("Usage: indicator.py PROVIDER WALLETADDRESS")
+    quit()
+
+providers = ["mine2gether"]
+if provider not in providers:
+    print("The provider '" + provider + "' is currently not supported. A list of all supported prodivers can be found on https://github.com/Lanseuo/turtle-mining-indicator. Create an issue and request support for your provider.")
     quit()
 
 
 class Indicator():
-    def __init__(self):
-        self.turtle = Provider(wallet_address)
-
+    def __init__(self, provider, wallet_address):
         self.app = 'turtle-mining-indicator'
-        self.menu = {}
         self.indicator = AppIndicator3.Indicator.new(
             self.app,
             os.path.realpath(__file__)[:-21] + "icon.png",
             AppIndicator3.IndicatorCategory.OTHER)
         self.indicator.set_status(AppIndicator3.IndicatorStatus.ACTIVE)
+        self.menu = {}
         self.indicator.set_menu(self.create_menu())
+
+        self.choose_provider(provider, wallet_address)
+
         self.update()
         GLib.timeout_add_seconds(300, self.update)
+
+    def choose_provider(self, provider, wallet_address):
+        if provider == "mine2gether":
+            self.turtle = Mine2GetherProvider(wallet_address)
 
     def update(self):
         try:
@@ -115,6 +126,6 @@ class Indicator():
         Gtk.main_quit()
 
 
-Indicator()
+Indicator(provider, wallet_address)
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 Gtk.main()
